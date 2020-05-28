@@ -1,0 +1,104 @@
+.factory-select {
+    margin-left: 50px;
+    cursor: pointer;
+    .factory-select--actived {
+        padding: 12px 0;
+        height: 64px;
+        line-height: 1;
+        p {
+            margin: 0;
+            color: #ffffff;
+            strong {
+                font-size: 16px;
+                line-height: 1.5;
+            }
+            small {
+                color: #8accff;
+            }
+            .factory-select__triangle {
+                display: inline-block;
+                width: 0;
+                height: 0;
+                margin-left: 8px;
+                vertical-align: middle;
+                border-top: 6px solid transparent;
+                border-right: 6px solid transparent;
+                border-bottom: 6px solid transparent;
+                border-left: 6px solid transparent;
+            }
+            .factory-select__triangle--up {
+                transform: translateY(-5px);
+                border-color: transparent transparent #8accff transparent;
+            }
+            .factory-select__triangle--down {
+                transform: translateY(2px);
+                border-color: #8accff transparent transparent transparent;
+            }
+        }
+    }
+    .factory-select__mask {
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+    }
+    .factory-select__list {
+        position: absolute;
+        z-index: 1;
+        top: 68px;
+        border-radius: 3px;
+        background: #ffffff;
+        .ant-select:first-child {
+            margin-right: 10px;
+        }
+        .factory-select__select-city {
+            padding: 0 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        ul {
+            padding: 0 15px;
+            max-height: 350px;
+            overflow-y: auto;
+            .factory-select__item {
+                padding: 15px 5px;
+                border-bottom: 1px solid #f0f0f0;
+                line-height: 1.5;
+                &:hover {
+                    background: #f1f1f1;
+                }
+                &.factory-select__item--actived {
+                    background-color: #e6f7ff;
+                }
+                .factory-select__item-name {
+                    margin-bottom: 5px;
+                }
+                .factory-select__item-fullname {
+                    margin: 0;
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+
+    // 过渡动画
+    .factory-select__list-enter {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    .factory-select__list-enter-active {
+        opacity: 1;
+        transform: translateX(0);
+        transition: opacity 300ms, transform 300ms;
+    }
+    .factory-select__list-exit {
+        opacity: 1;
+    }
+    .factory-select__list-exit-active {
+        opacity: 0;
+        transform: scale(0.9);
+        transition: opacity 300ms, transform 300ms;
+    }
+}

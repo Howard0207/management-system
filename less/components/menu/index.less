@@ -1,0 +1,81 @@
+.menu {
+    width: 200px;
+    height: 100%;
+    .menu__icon {
+        display: inline-block;
+        margin-right: 15px;
+        width: 24px;
+        height: 24px;
+        vertical-align: middle;
+        background-image: url('../../../statics/imgs/sprite_icon.png');
+        &.menu__icon--overview {
+            background-position: -177px 0px;
+        }
+        &.menu__icon--statistics {
+            background-position: -137px 0px;
+        }
+        &.menu__icon--optimize {
+            background-position: -72px 0px;
+        }
+        &.menu__icon--invest {
+            background-position: -215px 0px;
+        }
+        &.menu__icon--quality {
+            background-position: -325px 0px;
+        }
+    }
+    // .ant-menu-submenu-title:hover,
+    // .ant-menu-item:hover {
+    //     .nav__icon--overview {
+    //         background-position: -177px -24px;
+    //     }
+    //     .nav__icon--statistics {
+    //         background-position: -137px -24px;
+    //     }
+    //     .nav__icon--optimize {
+    //         background-position: -72px -24px;
+    //     }
+    //     .nav__icon--invest {
+    //         background-position: -215px -24px;
+    //     }
+    //     .nav__icon--quality {
+    //         background-position: -325px -24px;
+    //     }
+    // }
+
+    .ant-menu-submenu-title:hover {
+        background-color: #e6f7ff;
+    }
+    .menu__label {
+        vertical-align: middle;
+    }
+    // 修改 antd 样式
+    .ant-menu-inline {
+        border-right: 0;
+    }
+    .ant-menu-item:hover {
+        background-color: #e6f7ff;
+        &:after {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            border-right: 3px solid #1890ff;
+            transform: scaleY(1);
+            opacity: 1;
+        }
+    }
+    .ant-menu-sub {
+        .ant-menu-item-only-child {
+            padding-left: 62px !important;
+        }
+        .ant-menu-submenu-title {
+            .ant-menu-item-only-child;
+        }
+        .ant-menu-submenu {
+            .ant-menu-item-only-child {
+                padding-left: 80px !important;
+            }
+        }
+    }
+}
