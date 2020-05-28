@@ -1,4 +1,3 @@
-# 电气安全
 
 ## 项目启动步骤
 
@@ -63,9 +62,5 @@
 ## 采用的插件有
 
 -   mockjs
--   immutable
 -   moment => 日期处理类库，中文文档 http://momentjs.cn/
 
-## 代码规范（请仔细阅读）
-
-http://www.projectspecification.soejh.com/chapter1/
