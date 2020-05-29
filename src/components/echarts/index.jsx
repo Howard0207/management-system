@@ -10,6 +10,7 @@ import RingAccounted from './ring-accounted';
 import Gauge from './gauge';
 import EchartChina from './map-china';
 import Bar from './bar';
+import Radar from './radar';
 
 export {
     Bar,
@@ -23,4 +24,5 @@ export {
     RingAccounted,
     EchartChina,
     Gauge,
+    Radar,
 };

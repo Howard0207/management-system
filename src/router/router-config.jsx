@@ -11,6 +11,12 @@ const Main = Loadable({
     loader: () => import(/* webpackPrefetch: true */ '../pages/main'),
     loading: Loading('loadable-loading__app'),
 });
+
+const Analysis = Loadable({
+    loader: () => import(/* webpackPrefetch: true */ '../pages/analysis'),
+    loading: Loading('loadable-loading_page'),
+});
+
 const Gallery = Loadable({
     loader: () => import(/* webpackPrefetch: true */ '../pages/gallery'),
     loading: Loading('loadable-loading__page'),
@@ -48,7 +54,7 @@ const routes = [
             {
                 path: '/dashboard/analysis',
                 exact: true,
-                component: NotFound,
+                component: Analysis,
             },
             {
                 path: '/dashboard/monitor',
