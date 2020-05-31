@@ -2,7 +2,7 @@ import axios from '_service';
 import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
 import '_less/gallery/detail';
-import { Breadcrumb, Button, Modal, Form, Input } from 'antd';
+import { Breadcrumb, Button, Modal, Form, Input, Progress } from 'antd';
 
 const { TextArea } = Input;
 class GallaryDetail extends React.Component {
@@ -128,9 +128,9 @@ class GallaryDetail extends React.Component {
         ));
     };
 
-    add = (item) => {
+    add = () => {
         const { imgList } = this.state;
-        const listItem = item || { id: Date.now(), desc: '', path: '' };
+        const listItem = { id: Date.now(), desc: '', path: '' };
         imgList.push(listItem);
         this.setState({ imgList });
     };
@@ -139,16 +139,20 @@ class GallaryDetail extends React.Component {
         console.log(values);
     };
 
-    upload = async (e) => {
+    upload = async (index, e) => {
         const docs = e.target.files[0];
         await this.getFiles(docs);
-        const { chunkReqList } = this.state;
-        const result = await this.uploadChunks(chunkReqList);
+        const { chunkReqList, imgList } = this.state;
+        imgList[index].file = this.getObjectURL(docs);
+        imgList[index].progress = 0;
+        this.setState({ imgList });
+        const result = await this.uploadChunks(chunkReqList, docs.size);
         const mergeResult = await this.mergeChunks();
         if (mergeResult.code === 200) {
-            console.log(mergeResult.url);
-            // this.add()
-            // this.setState({ imageUrl: mergeResult.data.url });
+            imgList[index].path = mergeResult.path;
+            imgList[index].progress = 100;
+            imgList[index].uploadRes = true;
+            this.setState({ imgList });
         }
     };
 
@@ -167,17 +171,26 @@ class GallaryDetail extends React.Component {
         this.setState({ chunkReqList, token, name, chunkCount });
     };
 
-    uploadChunks = async (requestList) => {
-        const { token } = this.state;
+    uploadChunks = async (requestList, size) => {
+        const { token, imgList } = this.state;
+        let load = 0;
         for (let i = 0; i < requestList.length; i++) {
             // eslint-disable-next-line no-await-in-loop
             await Promise.all(
+                // eslint-disable-next-line no-loop-func
                 requestList[i].map((item, index) => {
                     const formData = new FormData();
                     formData.append('token', token);
                     formData.append('file', item.file);
                     formData.append('index', i * 4 + index);
-                    return axios.post('/upload/docs', formData);
+                    return axios.post('/upload/gallerys', formData, {
+                        timeout: 200000,
+                        onUploadProgress: (progressEvent) => {
+                            load += progressEvent.loaded;
+                            imgList[i].progress = Math.round((load / size) * 100);
+                            this.setState({ imgList });
+                        },
+                    });
                 })
             );
         }
@@ -191,7 +204,7 @@ class GallaryDetail extends React.Component {
         formD.append('token', token);
         formD.append('chunkCount', chunkCount);
         formD.append('filename', name);
-        return axios.post('/upload/gallery', formD);
+        return axios.post('/upload/gallerys', formD);
     };
 
     /**
@@ -219,8 +232,25 @@ class GallaryDetail extends React.Component {
         return [chunks];
     };
 
+    getObjectURL(file) {
+        let url = null;
+        // 下面函数执行的效果是一样的，只是需要针对不同的浏览器执行不同的 js 函数而已
+        if (window.createObjectURL !== undefined) {
+            // basic
+            url = window.createObjectURL(file);
+        } else if (window.URL !== undefined) {
+            // mozilla(firefox)
+            url = window.URL.createObjectURL(file);
+        } else if (window.webkitURL !== undefined) {
+            // webkit or chrome
+            url = window.webkitURL.createObjectURL(file);
+        }
+        return url;
+    }
+
     render() {
         const { leftData, centerData, rightData, visible, imgList } = this.state;
+        console.log(imgList);
         return (
             <div className="gallery-detail">
                 <header>
@@ -270,14 +300,33 @@ class GallaryDetail extends React.Component {
                     className="gallery-detail-modal"
                 >
                     <Form name="basic" ref={this.galleryForm} onFinish={this.onFinish}>
-                        {imgList.map((item) => {
+                        {imgList.map((item, index) => {
                             return (
                                 <Form.Item key={item.id} className="upload-item">
-                                    {item.path !== '' ? (
-                                        <img src={item.path} alt="" />
+                                    {item.file !== undefined ? (
+                                        <div
+                                            style={{
+                                                backgroundImage: `url(${item.file})`,
+                                                backgroundSize: 'cover',
+                                                width: '100px',
+                                                height: '100px',
+                                                backgroundPosition: 'center',
+                                            }}
+                                        >
+                                            <Progress
+                                                type="circle"
+                                                width={80}
+                                                className={
+                                                    item.uploadRes
+                                                        ? 'upload-progress upload-progress-finish'
+                                                        : 'upload-progress'
+                                                }
+                                                percent={item.progress}
+                                            />
+                                        </div>
                                     ) : (
                                         <label className="upload-btn">
-                                            <input type="file" name="file" onChange={this.upload} />
+                                            <input type="file" name="file" onChange={this.upload.bind(this, index)} />
                                             <i className="iconfont icon-add"></i>
                                         </label>
                                     )}
