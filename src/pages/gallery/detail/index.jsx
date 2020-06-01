@@ -139,6 +139,9 @@ class GallaryDetail extends React.Component {
         console.log(values);
     };
 
+    /**
+     * 上传文件方法入口
+     */
     upload = async (index, e) => {
         const docs = e.target.files[0];
         await this.getFiles(docs);
@@ -146,7 +149,7 @@ class GallaryDetail extends React.Component {
         imgList[index].file = this.getObjectURL(docs);
         imgList[index].progress = 0;
         this.setState({ imgList });
-        const result = await this.uploadChunks(chunkReqList, docs.size);
+        await this.uploadChunks(chunkReqList, docs.size);
         const mergeResult = await this.mergeChunks();
         if (mergeResult.code === 200) {
             imgList[index].path = mergeResult.path;
@@ -156,6 +159,9 @@ class GallaryDetail extends React.Component {
         }
     };
 
+    /**
+     * 获取文件分片后的list
+     */
     getFiles = (docs) => {
         const token = +new Date(); // 时间戳
         const { name } = docs;
@@ -171,6 +177,9 @@ class GallaryDetail extends React.Component {
         this.setState({ chunkReqList, token, name, chunkCount });
     };
 
+    /**
+     * 上传文件
+     */
     uploadChunks = async (requestList, size) => {
         const { token, imgList } = this.state;
         let load = 0;
@@ -188,7 +197,9 @@ class GallaryDetail extends React.Component {
                         onUploadProgress: (progressEvent) => {
                             load += progressEvent.loaded;
                             imgList[i].progress = Math.round((load / size) * 100);
-                            this.setState({ imgList });
+                            setTimeout(() => {
+                                this.setState({ imgList });
+                            });
                         },
                     });
                 })
@@ -197,6 +208,9 @@ class GallaryDetail extends React.Component {
         return Promise.resolve();
     };
 
+    /**
+     * 合并分片文件
+     */
     mergeChunks = async () => {
         const { token, name, chunkCount } = this.state;
         const formD = new FormData();
@@ -232,9 +246,13 @@ class GallaryDetail extends React.Component {
         return [chunks];
     };
 
+    /**
+     * 通过文件获取图片base64编码
+     * @param {type: file} file
+     * @return {type: string(base64)} base64
+     */
     getObjectURL(file) {
         let url = null;
-        // 下面函数执行的效果是一样的，只是需要针对不同的浏览器执行不同的 js 函数而已
         if (window.createObjectURL !== undefined) {
             // basic
             url = window.createObjectURL(file);
@@ -250,7 +268,6 @@ class GallaryDetail extends React.Component {
 
     render() {
         const { leftData, centerData, rightData, visible, imgList } = this.state;
-        console.log(imgList);
         return (
             <div className="gallery-detail">
                 <header>
@@ -305,12 +322,9 @@ class GallaryDetail extends React.Component {
                                 <Form.Item key={item.id} className="upload-item">
                                     {item.file !== undefined ? (
                                         <div
+                                            className="upload-img"
                                             style={{
                                                 backgroundImage: `url(${item.file})`,
-                                                backgroundSize: 'cover',
-                                                width: '100px',
-                                                height: '100px',
-                                                backgroundPosition: 'center',
                                             }}
                                         >
                                             <Progress

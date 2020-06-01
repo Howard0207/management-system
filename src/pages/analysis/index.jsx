@@ -3,6 +3,8 @@ import { withRouter } from 'react-router-dom';
 // import { Button } from 'antd';
 import RadarChart from './components/radar';
 import Map from './components/map';
+import CalendarChart from './components/calendar';
+import PieGraph from './components/pie-graph';
 import '_less/analysis';
 
 class Analysis extends React.Component {
@@ -20,6 +22,8 @@ class Analysis extends React.Component {
                 <div>
                     <Map />
                 </div>
+                <CalendarChart />
+                <PieGraph />
             </div>
         );
     }
