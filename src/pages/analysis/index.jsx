@@ -5,6 +5,7 @@ import RadarChart from './components/radar';
 import Map from './components/map';
 import CalendarChart from './components/calendar';
 import PieGraph from './components/pie-graph';
+import BasicRing from './components/ring';
 import '_less/analysis';
 
 class Analysis extends React.Component {
@@ -18,6 +19,7 @@ class Analysis extends React.Component {
     render() {
         return (
             <div className="analysis">
+                <BasicRing />
                 <RadarChart />
                 <div>
                     <Map />

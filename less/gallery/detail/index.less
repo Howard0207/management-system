@@ -24,10 +24,44 @@
     }
 }
 .gallery-detail-modal {
+    .ant-modal-footer {
+        display: flex;
+        justify-content: space-between;
+    }
+    .ant-modal-body {
+        max-height: 500px;
+        overflow-y: scroll;
+    }
     .upload-item .ant-form-item-control-input-content {
         display: flex;
         align-items: center;
         justify-content: space-between;
+    }
+    .upload-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 24px;
+        .ant-form-item {
+            flex: 1;
+            align-items: center;
+            margin-bottom: 0;
+        }
+        .ant-form-item-label {
+            overflow: visible;
+            label {
+                height: auto;
+                &::after {
+                    display: none;
+                }
+            }
+        }
+        .icon-trash {
+            margin-left: 10px;
+            font-weight: 600;
+            font-size: 24px;
+            color: #9a9a9a;
+            cursor: url(../../../statics/imgs/link.png), pointer;
+        }
     }
     .upload-btn {
         margin-right: 15px;
@@ -56,20 +90,6 @@
         box-shadow: 0 1px 5px 0 #777;
         background-size: cover;
         background-position: center;
-        &::after {
-            position: absolute;
-            content: 'x';
-            width: 16px;
-            height: 16px;
-            top: -7px;
-            right: -7px;
-            border-radius: 50%;
-            color: #fff;
-            text-align: center;
-            line-height: 12px;
-            border: 1px solid red;
-            color: red;
-        }
     }
     .upload-progress {
         padding: 10px;

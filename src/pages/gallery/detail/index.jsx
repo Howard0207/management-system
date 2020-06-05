@@ -2,7 +2,7 @@ import axios from '_service';
 import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
 import '_less/gallery/detail';
-import { Breadcrumb, Button, Modal, Form, Input, Progress } from 'antd';
+import { Breadcrumb, Button, Modal, Form, Input, Progress, message } from 'antd';
 
 const { TextArea } = Input;
 class GallaryDetail extends React.Component {
@@ -128,15 +128,19 @@ class GallaryDetail extends React.Component {
         ));
     };
 
-    add = () => {
+    addItem = () => {
         const { imgList } = this.state;
         const listItem = { id: Date.now(), desc: '', path: '' };
         imgList.push(listItem);
         this.setState({ imgList });
     };
 
-    onFinish = (values) => {
-        console.log(values);
+    removeItem = (index) => {
+        const { imgList } = this.state;
+        if (imgList.length > 1) {
+            imgList.splice(index, 1);
+            this.setState({ imgList });
+        }
     };
 
     /**
@@ -152,7 +156,7 @@ class GallaryDetail extends React.Component {
         await this.uploadChunks(chunkReqList, docs.size);
         const mergeResult = await this.mergeChunks();
         if (mergeResult.code === 200) {
-            imgList[index].path = mergeResult.path;
+            imgList[index].path = mergeResult.data.path;
             imgList[index].progress = 100;
             imgList[index].uploadRes = true;
             this.setState({ imgList });
@@ -266,6 +270,23 @@ class GallaryDetail extends React.Component {
         return url;
     }
 
+    submitPictureInfos = () => {
+        const form = this.galleryForm.current;
+        const { imgList } = this.state;
+        let bool = true;
+        for (const item of imgList) {
+            if (!item.path) {
+                bool = false;
+            }
+            item.desc = form.getFieldValue(`${item.id}`);
+        }
+        if (!bool) {
+            message.warning('您还有未上传的图片');
+            return false;
+        }
+        return true;
+    };
+
     render() {
         const { leftData, centerData, rightData, visible, imgList } = this.state;
         return (
@@ -309,53 +330,70 @@ class GallaryDetail extends React.Component {
                 <Modal
                     title="Modal"
                     visible={visible}
-                    onOk={this.createGallery}
                     onCancel={this.hideModal}
                     okText="确认"
                     cancelText="取消"
                     centered
                     className="gallery-detail-modal"
-                >
-                    <Form name="basic" ref={this.galleryForm} onFinish={this.onFinish}>
-                        {imgList.map((item, index) => {
-                            return (
-                                <Form.Item key={item.id} className="upload-item">
-                                    {item.file !== undefined ? (
-                                        <div
-                                            className="upload-img"
-                                            style={{
-                                                backgroundImage: `url(${item.file})`,
-                                            }}
-                                        >
-                                            <Progress
-                                                type="circle"
-                                                width={80}
-                                                className={
-                                                    item.uploadRes
-                                                        ? 'upload-progress upload-progress-finish'
-                                                        : 'upload-progress'
-                                                }
-                                                percent={item.progress}
-                                            />
-                                        </div>
-                                    ) : (
-                                        <label className="upload-btn">
-                                            <input type="file" name="file" onChange={this.upload.bind(this, index)} />
-                                            <i className="iconfont icon-add"></i>
-                                        </label>
-                                    )}
-                                    <TextArea autoSize={{ minRows: 4, maxRows: 4 }} maxLength={60} />
-                                </Form.Item>
-                            );
-                        })}
-                        <Button type="primary" onClick={this.add}>
-                            添加
-                        </Button>
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit">
+                    footer={[
+                        <Button key="addItem" onClick={this.addItem}>
+                            添加图片
+                        </Button>,
+                        <div key="footer-btn-group">
+                            <Button key="cancel" onClick={this.hideModal}>
+                                取消
+                            </Button>
+                            <Button key="submit" type="primary" onClick={this.submitPictureInfos}>
                                 Submit
                             </Button>
-                        </Form.Item>
+                        </div>,
+                    ]}
+                >
+                    <Form name="basic" ref={this.galleryForm}>
+                        {imgList.map((item, index) => {
+                            return (
+                                <div className="upload-item">
+                                    <Form.Item
+                                        name={`${item.id}`}
+                                        key={item.id}
+                                        className="sss"
+                                        label={
+                                            item.file !== undefined ? (
+                                                <div
+                                                    className="upload-img"
+                                                    style={{
+                                                        backgroundImage: `url(${item.file})`,
+                                                    }}
+                                                >
+                                                    <Progress
+                                                        type="circle"
+                                                        width={80}
+                                                        className={
+                                                            item.uploadRes
+                                                                ? 'upload-progress upload-progress-finish'
+                                                                : 'upload-progress'
+                                                        }
+                                                        percent={item.progress}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <label className="upload-btn">
+                                                    <input
+                                                        type="file"
+                                                        name="file"
+                                                        onChange={this.upload.bind(this, index)}
+                                                    />
+                                                    <i className="iconfont icon-add"></i>
+                                                </label>
+                                            )
+                                        }
+                                    >
+                                        <TextArea autoSize={{ minRows: 4, maxRows: 4 }} maxLength={60} />
+                                    </Form.Item>
+                                    <i className="iconfont icon-trash"></i>
+                                </div>
+                            );
+                        })}
                     </Form>
                 </Modal>
             </div>
